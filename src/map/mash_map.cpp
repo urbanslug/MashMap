@@ -18,6 +18,7 @@
 
 //External includes
 #include "common/argvparser.hpp"
+#include "common/ALeS.hpp"
 
 int main(int argc, char** argv)
 {
@@ -39,8 +40,17 @@ int main(int argc, char** argv)
 
   auto t0 = skch::Time::now();
 
+  std::cerr << "Generating spaced seeds" << std::endl;
+  uint32_t seed_weight = 10;
+  uint32_t seed_count = 5;
+  uint32_t region_length = 50;
+  float similarity = 0.8;
+  std::vector<ales::spaced_seed> spaced_seeds = ales::generate_spaced_seeds(seed_weight, seed_count, similarity, region_length);
+  std::chrono::duration<double> time_spaced_seeds = skch::Time::now() - t0;
+  std::cerr << "INFO, Time spent generating spaced seeds " << time_spaced_seeds.count()  << " seconds" << std::endl;
+
   //Build the sketch for reference
-  skch::Sketch referSketch(parameters);
+  skch::Sketch referSketch(parameters, spaced_seeds);
 
   std::chrono::duration<double> timeRefSketch = skch::Time::now() - t0;
   std::cout << "INFO, skch::main, Time spent computing the reference index: " << timeRefSketch.count() << " sec" << std::endl;
@@ -48,7 +58,7 @@ int main(int argc, char** argv)
   //Map the sequences in query file
   t0 = skch::Time::now();
 
-  skch::Map mapper = skch::Map(parameters, referSketch);
+  skch::Map mapper = skch::Map(parameters, referSketch, spaced_seeds);
 
   std::chrono::duration<double> timeMapQuery = skch::Time::now() - t0;
   std::cout << "INFO, skch::main, Time spent mapping the query : " << timeMapQuery.count() << " sec" << std::endl;

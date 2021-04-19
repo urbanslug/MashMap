@@ -25,6 +25,7 @@
 #include "common/murmur3.h"
 #include "common/prettyprint.hpp"
 #include "common/sparsehash/dense_hash_map"
+#include "common/ALeS.hpp"
 
 KSEQ_INIT(gzFile, gzread)
 
@@ -48,6 +49,8 @@ namespace skch
     
       //algorithm parameters
       const skch::Parameters &param;
+
+      std::vector<ales::spaced_seed> spaced_seeds;
 
       //Ignore top % most frequent minimizers while lookups
       const float percentageThreshold = 0.001;
@@ -111,6 +114,16 @@ namespace skch
             this->computeFreqHist();
           }
 
+      /**
+       * @brief   constructor
+       *          also builds, indexes the minimizer table
+       */
+      Sketch(const skch::Parameters &p, std::vector<ales::spaced_seed> &sp_seeds) 
+        : param(p), spaced_seeds(sp_seeds) {
+        this->build();
+        this->index();
+        this->computeFreqHist();
+      }
       private:
 
       /**
@@ -192,7 +205,12 @@ namespace skch
         MI_Type* thread_output = new MI_Type();
 
         //Compute minimizers in reference sequence
-        skch::CommonFunc::addMinimizers(*thread_output, &(input->seq[0u]), input->len, param.kmerSize, param.windowSize, param.alphabetSize, input->seqCounter);
+        if (spaced_seeds.empty()) {
+            skch::CommonFunc::addMinimizers(*thread_output, &(input->seq[0u]), input->len, param.kmerSize, param.windowSize, param.alphabetSize, input->seqCounter);
+        } else {
+          skch::CommonFunc::addSpacedSeedMinimizers(*thread_output, &(input->seq[0u]), input->len, param.kmerSize, param.windowSize, param.alphabetSize, input->seqCounter, spaced_seeds);
+        }
+        
 
         return thread_output;
       }
