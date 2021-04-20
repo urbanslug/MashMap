@@ -213,10 +213,18 @@ namespace skch
         //Compute reverse complement of seq
         char* seqRev = new char[len];
 
+        auto extract_kmer = [](char* thing, size_t len) {
+          std::string the_string;
+          for (size_t i=0; i<len; i++, thing++)
+            the_string.push_back(*thing);
+
+          return the_string;
+        };
+
         if(alphabetSize == 4) //not protein
           CommonFunc::reverseComplement(seq, seqRev, len);
 
-        for (ales::spaced_seed s : spaced_seeds) {
+        for (auto &s : spaced_seeds) {
           size_t seed_length = s.length;
           char* ss = s.seed;
 
@@ -231,6 +239,12 @@ namespace skch
                 new_reverse_kmer.push_back(*reverse_start_char);
               }
             }
+            ss = s.seed; // reset the seed for the next iteration of the loop
+
+            // debug print
+            std::cerr << seed_length << " " << s.seed
+                      << " forward " << extract_kmer(seq+i, seed_length) << " " << new_forward_kmer
+                      << " reverse " << extract_kmer(seqRev + len - i - seed_length, seed_length) << " " << new_reverse_kmer << std::endl;
 
             offset_t currentWindowId = i - windowSize + 1;
 

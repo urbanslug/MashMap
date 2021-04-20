@@ -1297,7 +1297,7 @@ namespace ales {
           // std::cerr << "seeds: " << std::endl;
           for (i=0; i<nSeeds; i++) {
             // TODO: remove?
-            std::cerr << seeds[i] << std::endl;
+            //std::cerr << seeds[i] << std::endl;
           }
           if(!bestMode) {
             // std::cerr << "Real sensitivity = " << bestSens << std::endl;
@@ -1466,6 +1466,14 @@ namespace ales {
     size_t length;
   };
 
+  void printSpacedSeeds(std::vector<spaced_seed> &spaced_seeds) {
+    for (auto &sp: spaced_seeds) {
+      std::cerr << sp.seed << std::endl;
+    }
+    std::cerr<<std::endl;
+  }
+
+
   std::vector<spaced_seed> generate_spaced_seeds(int weight, int number_of_seeds, float similarity, int region_length) {
     // set parameters
     w=weight; k=number_of_seeds; p=similarity; N=region_length;
@@ -1473,13 +1481,13 @@ namespace ales {
     char** raw_spaced_seeds = ales_wrapper();
     std::vector<spaced_seed> spaced_seeds;
 
-    //printArray2(raw_spaced_seeds, k);
-
     for (uint32_t i=0; i<number_of_seeds; i++) {
       char* s = raw_spaced_seeds[i];
       spaced_seeds.push_back(spaced_seed{s, strlen(s)});
     }
-    // std::std::cerr << "Sensitivity " << sens << std::std::endl;
+
+    printSpacedSeeds(spaced_seeds);
+    std::cerr << "Sensitivity " << sens << std::endl;
     return spaced_seeds;
   }
 }
