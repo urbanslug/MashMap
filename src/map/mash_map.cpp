@@ -43,8 +43,9 @@ int main(int argc, char** argv)
   std::cerr << "Generating spaced seeds" << std::endl;
   uint32_t seed_weight = 10;
   uint32_t seed_count = 5;
-  uint32_t region_length = 20;
   float similarity = 0.75;
+  uint32_t region_length = 20;
+
   std::vector<ales::spaced_seed> spaced_seeds = ales::generate_spaced_seeds(seed_weight, seed_count, similarity, region_length);
   std::chrono::duration<double> time_spaced_seeds = skch::Time::now() - t0;
   std::cout << "INFO, Time spent generating spaced seeds " << time_spaced_seeds.count()  << " seconds" << std::endl;

@@ -241,10 +241,11 @@ namespace skch
             }
             ss = s.seed; // reset the seed for the next iteration of the loop
 
-            // debug print
+            /* debug print
             std::cerr << seed_length << " " << s.seed
                       << " forward " << extract_kmer(seq+i, seed_length) << " " << new_forward_kmer
                       << " reverse " << extract_kmer(seqRev + len - i - seed_length, seed_length) << " " << new_reverse_kmer << std::endl;
+            */
 
             offset_t currentWindowId = i - windowSize + 1;
 
